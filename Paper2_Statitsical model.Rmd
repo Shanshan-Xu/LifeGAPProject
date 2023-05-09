@@ -1,0 +1,135 @@
+---
+title: "Life-GAP project Paper 2 - Poisson regression"
+author: Shanshan
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introducation
+
+This is a summary of the statistical model for the Paper2 of Life-GAP project
+
+```{r}
+
+```
+
+## Study design and modelling idea
+
+We all agreed that we will focus on the longitudinal study design. The idea of paper2 is following the participants from RHINE3 to RHINE4, using the **Poisson regression** to examine the association between the air pollution and greenness exposure and **asthma, long term cough, COPD**.
+
+```{r, echo=FALSE}
+
+```
+
+## Poisson regression 
+
+Usually, Poisson regression is a statistical modeling technique used to analyze count data, where the dependent variable represents the number of occurrences of a particular event within a fixed interval of time or space.The Poisson regression model is a type of **generalized linear model (GLM)** used to model count data that follow a Poisson distribution. **The model assumes that the mean and variance of the count variable are equal**, which is often a reasonable assumption for count data. The Poisson regression model can be written as:
+
+**log(μi) = β0 + β1x1i + β2x2i + ... + βpxpi**, 
+
+where μi is the mean of the count variable for observation i, xi are the predictor variables for observation i, and β0, β1, β2, ..., βp are the regression coefficients that represent the effects of the predictors on the log of the mean count. The model assumes that the log of the mean count is a linear combination of the predictors, which implies that the mean count itself follows an exponential distribution.
+
+The Poisson regression model can be extended to account for overdispersion, which occurs when the variance of the count variable is greater than the mean. This can be done by using a quasi-Poisson or negative binomial regression model instead of a standard Poisson regression model. In these models, an additional dispersion parameter is included to allow for extra variability in the data.
+
+**While Poisson regression is commonly used for modeling count data, it can also be used for modeling binary data, such as the incidence of a disease. In this case, the outcome variable is the count of disease incidence, and the exposure variable is typically the time at risk or the population size.**
+
+For Poisson regression with **binary outcomes**, the assumption that the mean and variance of the count variable are equal does not hold, since the outcome variable is binary and does not follow a Poisson distribution. **Instead, the Poisson regression model is typically used as a tool for modeling the incidence rate of a rare binary outcome over time or across populations, and to estimate the effects of predictor variables on this incidence rate.**
+
+
+**The Poisson regression model assumes that the relationship between the incidence rate and the predictor variables is linear on the log scale**. This assumption implies that the effect of each predictor variable on the incidence rate is **multiplicative (also the multiplicative Poisson regression model)** rather than additive. **In addition, the Poisson regression model assumes that the incidence rate is constant over time or across populations and that the probability of observing an event at a given time point or in a given population is proportional to the length of the observation period or the size of the population**.
+
+
+**To use Poisson regression for binary outcomes, the data must be structured in a person-time format**, where each observation represents a unit of time for a person at risk of the binary outcome. The outcome variable is the number of events observed during this person-time interval, and the offset term in the model is the log of the person-time at risk. **This ensures that the estimated incidence rate reflects the rate of the binary outcome over time or across populations, and not just the frequency of the outcome events**.
+
+It's important to note that while Poisson regression for binary outcomes can provide useful insights into the incidence rate of a rare binary outcome, it does have limitations. For example, **if the outcome is not rare, then the Poisson regression model may overestimate the incidence rate due to the assumption of constant incidence rate over time or across populations**. In this case, alternative models such as logistic regression may be more appropriate.
+
+One way to use Poisson regression for binary outcomes is to model the incidence rate, which is the number of disease events per unit of time or population size. The incidence rate can be calculated as:
+
+**incidence rate = number of disease events / person-time at risk**
+
+where the person-time at risk represents the total time that individuals in the population were observed and free from the disease (RHINE3 – RHINE4). The person-time at risk will be the same for each outcome, but the number of disease events are different, causing the different incidence rate. 
+
+To model the incidence rate using Poisson regression, we can specify a Poisson distribution for the outcome variable and include the person-time at risk as an offset term in the model. The offset term allows us to account for differences in the population size or the length of follow-up time across groups or individuals. The model can be written as:
+
+**log(incidence rate) = β0 + β1 * predictor variable + offset(log(person-time at risk))**
+
+where β0 and β1 are the regression coefficients for the intercept and the predictor variable, respectively. The offset term is included in the model with a log link function to ensure that the incidence rate is always positive.
+
+In Poisson regression, the incidence rate ratio (IRR) is used to quantify the effect of a predictor variable on the incidence rate of an outcome. The IRR is calculated as the exponential function of the regression coefficient (β) for the predictor variable:
+
+**IRR = exp(β)**
+
+This formula implies that the IRR represents the multiplicative change in the incidence rate associated with a one-unit increase in the predictor variable. For example, if the IRR is 1.5 for a predictor variable, then a one-unit increase in that predictor variable is associated with a 50% increase in the incidence rate of the outcome.
+
+The IRR is commonly used in Poisson regression because it allows for a straightforward interpretation of the effect of a predictor variable on the incidence rate, regardless of the scale or range of the predictor variable. The IRR is also a useful metric for comparing the relative effect sizes of different predictor variables in the same model.
+
+It's important to note that the IRR assumes that the relationship between the predictor variable and the incidence rate is linear on the log scale. In other words, a one-unit increase in the predictor variable has the same proportional effect on the incidence rate regardless of the starting value of the predictor variable. If the relationship between the predictor variable and the incidence rate is nonlinear, then the IRR may not accurately reflect the effect of the predictor variable on the incidence rate.
+
+## The difference of poisson and mepoisson command in Stata
+
+In Stata, the **poisson** command is used to estimate a **standard Poisson regression model**, while the **mepoisson** command is used to estimate a **mixed-effects Poisson regression model**.
+
+The poisson command estimates a Poisson regression model with fixed effects for a set of independent variables. For example, the following Stata command estimates a Poisson regression model with y as the dependent variable and x1 and x2 as independent variables:
+
+**poisson everasthmaR4 iqr_NDVI_2010 i.gender ageR3 i.bmicatR3 ib2.education3 i.R3_smoking5R3 i.maritalstatusR3 if everasthmaR3==0, offset (pyear) vce(cluster center_number) irr**
+
+```{r echo=FALSE, fig.cap="Standard Poisson regression", out.width = '70%'}
+knitr::include_graphics("p1.png")
+```
+
+est store model1
+
+The mepoisson command estimates a mixed-effects Poisson regression model that accounts for random effects. It allows for the inclusion of both fixed and random effects, as well as random intercepts and slopes. For example, the following Stata command estimates a mixed-effects Poisson regression model with y as the dependent variable, x1 as a fixed effect, and u as a random effect:
+
+mepoisson y x1 || u:
+
+**mepoisson everasthmaR4 iqr_NDVI_2010 i.gender ageR3 i.bmicatR3 ib2.education3 i.R3_smoking5R3 i.maritalstatusR3 if everasthmaR3==0, offset (pyear) irr ||center_number:**
+
+```{r echo=FALSE, fig.cap="Mixed-effects Poisson regression", out.width = '70%'}
+knitr::include_graphics("p2.png")
+```
+
+est store model2
+
+est stats model1 model2
+```{r echo=FALSE, fig.cap="AIC and BIC", out.width = '70%'}
+knitr::include_graphics("p3.png")
+```
+
+The results are similar to the single model, but the results differed in the two exposure model:
+```{r echo=FALSE, fig.cap="Two exposure model", out.width = '70%'}
+knitr::include_graphics("p4.png")
+knitr::include_graphics("p5.png")
+```
+
+The study center may affect the results. 
+In poisson command, the study center was taken as the fixed effects. 
+In mepoisson command, the study center was considered as the random effects. 
+
+## Fixed effects and random effects
+
+Fixed effects and random effects are two types of explanatory variables (also called "predictors" or "independent variables") used in statistical models.
+
+**Fixed effects** are explanatory variables that are treated as fixed or constant across all observations. In other words, they are assumed to have the same effect on the outcome variable for all individuals or groups in the sample. Examples of fixed effects might include gender, age, education level, or treatment group in an experimental study.
+
+**Random effects**, on the other hand, are explanatory variables that are assumed to have a random or varying effect on the outcome variable across different individuals or groups in the sample. Random effects are used in models that account for clustered or hierarchical data, where individuals are grouped within higher-level units such as schools, neighborhoods, or families.
+
+In summary, fixed effects are explanatory variables that are assumed to have a constant effect on the outcome variable, while random effects are explanatory variables that are assumed to have a varying effect on the outcome variable across different groups or clusters. Both types of effects can be used in statistical models to estimate the relationships between predictor variables and an outcome variable.
+
+**Fixed effects:**
+
+Variables that you are interested in studying or that you want to test for an effect on the outcome. For example, in a study of the effect of a drug on blood pressure, the drug would be a fixed effect.
+Variables that are not expected to vary across different groups or clusters in the data. For example, in a study of students in different schools, the student's age would be a fixed effect because it is not expected to vary within schools.
+
+**Random effects:**
+
+Variables that you are not interested in studying or that you do not want to test for an effect on the outcome, but that may affect the outcome due to their association with other variables. For example, in a study of the effect of a drug on blood pressure, the patient's weight may be a random effect if it is not of primary interest but may be associated with the patient's blood pressure.
+
+Variables that are expected to vary across different groups or clusters in the data. For example, in a study of students in different schools, the school would be a random effect because it is expected to vary across schools.
+It is important to note that the distinction between fixed effects and random effects is not always clear-cut, and there may be different ways to model the same variable as either a fixed effect or a random effect. In general, the choice of whether to treat a variable as a fixed effect or a random effect depends on the specific research question and the characteristics of the data. A good way to determine which variables should be treated as random effects is to consider the clustering structure of the data
+
