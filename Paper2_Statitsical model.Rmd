@@ -133,3 +133,24 @@ Variables that you are not interested in studying or that you do not want to tes
 Variables that are expected to vary across different groups or clusters in the data. For example, in a study of students in different schools, the school would be a random effect because it is expected to vary across schools.
 It is important to note that the distinction between fixed effects and random effects is not always clear-cut, and there may be different ways to model the same variable as either a fixed effect or a random effect. In general, the choice of whether to treat a variable as a fixed effect or a random effect depends on the specific research question and the characteristics of the data. A good way to determine which variables should be treated as random effects is to consider the clustering structure of the data
 
+## VCE in Stata
+
+VCE stands for Variance-Covariance Matrix of the Estimated Parameters. In Stata, the vce command is used to estimate the variance-covariance matrix of the parameter estimates in a regression model.
+
+The vce command has several options, including:
+
+**vce(robust):** estimates the variance-covariance matrix using robust standard errors
+
+**vce(cluster clustvar):** estimates the variance-covariance matrix using cluster-robust standard errors, where clustvar is the variable used to define the clusters
+
+**vce(bootstrap):** estimates the variance-covariance matrix using bootstrap standard errors
+
+By default, Stata uses the maximum likelihood estimate of the variance-covariance matrix, which assumes that the errors are homoskedastic and normally distributed. However, this assumption may not hold in practice, and using robust or cluster-robust standard errors can provide more accurate estimates of the standard errors and p-values.
+
+The variance-covariance matrix is an important component in calculating hypothesis tests, confidence intervals, and other inferential statistics in regression models.
+
+
+
+
+
+
